@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI関連銘柄の多様体（業界地図） — xdbdb.com</title>
+<meta name="description" content="AI関連の日本株54銘柄をサプライチェーン9島に分類した業界地図。半導体・製造装置・材料・電子部品・電線・パワー半導体・フィジカルAI・データセンター・AI・LLMの相互関係を視覚化。" />
+<link rel="canonical" href="https://xdbdb.com/ai-manifold/" />
+<style>
+  :root{
+    --sea-0:#05080f;
+    --sea-1:#0a1322;
+    --sea-2:#0f1d33;
+    --ink:#e7eef7;
+    --ink-dim:#8aa0bd;
+    --ink-faint:#52647e;
+    --line:#1d3350;
+    --line-soft:#172A44;
+    --up:#27d39a;
+    --down:#ff6b6b;
+    --flat:#6c819c;
+    --bridge:#3a567f;
+    --bridge-hot:#6fa8ff;
+    --accent:#6fa8ff;
+    --mono:'SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    background:
+      radial-gradient(1200px 800px at 70% -10%, #0c1830 0%, rgba(12,24,48,0) 60%),
+      radial-gradient(900px 700px at 10% 110%, #0b1b2e 0%, rgba(11,27,46,0) 55%),
+      var(--sea-0);
+    color:var(--ink);font-family:var(--sans);
+  }
+  #stage{position:relative;width:100vw;height:100vh}
+  svg{width:100%;height:100%;display:block;cursor:default}
+
+  /* ヘッダ */
+  .topbar{
+    position:absolute;top:0;left:0;right:0;z-index:20;
+    display:flex;align-items:baseline;gap:14px;
+    padding:14px 18px 22px;
+    background:linear-gradient(180deg, rgba(5,8,15,.92) 0%, rgba(5,8,15,0) 100%);
+    pointer-events:none;
+  }
+  .brand{font-size:15px;letter-spacing:.06em;font-weight:600}
+  .brand .man{color:var(--accent)}
+  .sub{font-size:11.5px;color:var(--ink-dim);letter-spacing:.04em}
+  .crumbs{font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);margin-left:auto;pointer-events:auto}
+  .crumbs b{color:var(--ink-dim);font-weight:500}
+
+  /* 凡例＋戻る */
+  .hud{
+    position:absolute;left:18px;bottom:16px;z-index:20;
+    display:flex;flex-direction:column;gap:8px;font-size:11px;color:var(--ink-dim);
+  }
+  .legend{display:flex;gap:14px;align-items:center;
+    background:rgba(10,19,34,.72);border:1px solid var(--line-soft);
+    border-radius:8px;padding:7px 11px;backdrop-filter:blur(4px)}
+  .legend .it{display:flex;gap:6px;align-items:center;white-space:nowrap}
+  .dot{width:9px;height:9px;border-radius:50%}
+  .swatch{width:14px;height:3px;border-radius:2px}
+
+  .backbtn{
+    align-self:flex-start;pointer-events:auto;cursor:pointer;
+    display:none;gap:7px;align-items:center;
+    background:rgba(10,19,34,.82);border:1px solid var(--line-soft);
+    color:var(--ink);border-radius:8px;padding:8px 13px;font-size:12px;
+  }
+  .backbtn:hover{border-color:var(--bridge-hot);color:#fff}
+  .backbtn .ar{font-family:var(--mono);color:var(--accent)}
+
+  /* ツールチップ */
+  .tip{
+    position:absolute;z-index:30;pointer-events:none;opacity:0;transform:translateY(4px);
+    transition:opacity .12s, transform .12s;
+    background:rgba(8,15,28,.96);border:1px solid var(--line-soft);
+    border-radius:9px;padding:9px 11px;min-width:150px;backdrop-filter:blur(6px);
+    box-shadow:0 8px 30px rgba(0,0,0,.5);
+  }
+  .tip.on{opacity:1;transform:translateY(0)}
+  .tip .nm{font-size:13px;font-weight:600;margin-bottom:1px}
+  .tip .cd{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint)}
+  .tip .pr{display:flex;justify-content:space-between;gap:14px;margin-top:6px;font-family:var(--mono);font-size:12px}
+  .tip .chg{font-weight:600}
+  .tip .also{margin-top:7px;padding-top:7px;border-top:1px solid var(--line-soft);
+    font-size:10.5px;color:var(--ink-dim);line-height:1.5}
+  .tip .also b{color:var(--bridge-hot);font-weight:500}
+
+  text{user-select:none}
+  .island-label{font-size:13px;font-weight:600;letter-spacing:.04em;fill:var(--ink)}
+  .island-sub{font-size:10px;fill:var(--ink-faint);font-family:var(--mono);letter-spacing:.05em}
+  .node-label{font-size:10.5px;fill:var(--ink-dim);font-family:var(--sans)}
+  .hint{position:absolute;left:50%;bottom:54px;transform:translateX(-50%);z-index:15;
+    font-size:11px;color:var(--ink-faint);letter-spacing:.04em;pointer-events:none;
+    transition:opacity .4s}
+
+  /* 下部：SEO用の銘柄一覧 */
+  .scroll-cue{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:15;
+    font-size:11px;color:var(--ink-faint);letter-spacing:.05em;pointer-events:none}
+  #list{max-width:1080px;margin:0 auto;padding:30px 22px 80px}
+  #list .lead{font-size:12.5px;color:var(--ink-dim);line-height:1.8;margin:0 0 26px;
+    border-left:2px solid var(--line-soft);padding-left:14px}
+  .sec{margin:0 0 30px}
+  .sec-h{display:flex;align-items:baseline;gap:10px;
+    border-bottom:1px solid var(--line-soft);padding-bottom:7px;margin-bottom:4px}
+  .sec-h h2{font-size:15px;font-weight:600;margin:0;color:var(--ink)}
+  .sec-h .en{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em}
+  .sec-h .cnt{margin-left:auto;font-size:11px;color:var(--ink-faint)}
+  .row{display:grid;grid-template-columns:62px minmax(116px,1.1fr) 96px 78px 1fr;
+    gap:12px;align-items:baseline;padding:9px 4px;border-bottom:1px solid rgba(23,42,68,.5);
+    font-size:12.5px}
+  .row .cd{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+  .row .nm{color:var(--ink);font-weight:500}
+  .row .nm .x{font-size:10px;color:var(--bridge-hot);margin-left:6px;font-weight:400}
+  .row .pr{font-family:var(--mono);text-align:right;color:var(--ink-dim)}
+  .row .pr .st{display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:var(--up);margin-left:7px;vertical-align:middle}
+  .row .chg{font-family:var(--mono);text-align:right;font-weight:600}
+  .row .ds{color:var(--ink-dim);line-height:1.6;font-size:12px}
+  @media(max-width:680px){
+    .row{grid-template-columns:54px 1fr 84px;row-gap:3px}
+    .row .chg{grid-column:3}
+    .row .ds{grid-column:1/-1;color:var(--ink-faint)}
+  }
+  footer.disclaimer{
+    max-width:1080px;margin:0 auto;padding:20px 22px 40px;
+    font-size:11px;color:var(--ink-faint);line-height:1.7;
+    border-top:1px solid var(--line-soft);
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="topbar">
+    <span class="brand">AI関連銘柄の<span class="man">多様体</span></span>
+    <span class="sub">業界地図</span>
+    <span class="crumbs" id="crumbs"><b>大域ビュー</b> ／ 9島 54銘柄</span>
+  </div>
+
+  <svg id="map" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice"></svg>
+
+  <div class="hint" id="hint">島をクリックすると内部構造が開きます</div>
+
+  <div class="hud">
+    <div class="backbtn" id="back"><span class="ar">←</span> 大域ビューへ戻る</div>
+    <div class="legend">
+      <span class="it"><span class="dot" style="background:var(--up)"></span>前日比 +</span>
+      <span class="it"><span class="dot" style="background:var(--down)"></span>−</span>
+      <span class="it"><span class="swatch" style="background:var(--bridge)"></span>島またぎ</span>
+    </div>
+  </div>
+
+  <div class="tip" id="tip"></div>
+  <div class="scroll-cue">↓ 銘柄一覧（セクター別）</div>
+</div>
+
+<section id="list"></section>
+
+<footer class="disclaimer">
+  本サイトの情報は投資勧誘を目的とするものではなく、情報提供のみを目的としています。株価・前日比等のデータは毎営業日の更新を目指していますが、正確性・完全性を保証するものではありません。投資に関する最終判断はご自身の判断と責任においてお願いします。
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+/* ============================================================
+   第5号「AI関連銘柄の多様体」
+   大域：島が浮かぶ全体地図／局所：島クリックで内部展開
+   株価・前日比・時価総額は data.json から取得（毎営業日 5:30 JST 更新）
+   ============================================================ */
+
+/* ---- 島定義（9島） ---- */
+const ISLANDS = {
+  ai:    {name:'AI・LLM／国内テック', sub:'AI / LLM',       pos:[800,300]},
+  semi:  {name:'半導体',            sub:'SEMICONDUCTOR',    pos:[560,470]},
+  equip: {name:'半導体製造装置',     sub:'SPE',             pos:[340,300]},
+  mat:   {name:'半導体材料',         sub:'MATERIALS',       pos:[300,560]},
+  parts: {name:'電子部品',           sub:'COMPONENTS',      pos:[560,720]},
+  cable: {name:'電線・ケーブル',     sub:'CABLE',           pos:[820,760]},
+  power: {name:'パワー半導体',       sub:'POWER',           pos:[1060,620]},
+  phys:  {name:'フィジカルAI',       sub:'ROBOTICS / FA',   pos:[1180,420]},
+  dc:    {name:'データセンター',     sub:'DATA CENTER',     pos:[1060,210]},
+};
+
+/* ---- 銘柄（home=主たる島, also=横断先の島） ---- */
+const STOCKS = [
+  // 島1 AI
+  {c:'9432',n:'NTT',            home:'ai',  also:['dc']},
+  {c:'9433',n:'KDDI',           home:'ai',  also:['dc']},
+  {c:'6702',n:'富士通',          home:'ai'},
+  {c:'6701',n:'NEC',            home:'ai',  also:['semi']},
+  {c:'6758',n:'ソニーG',         home:'ai',  also:['semi']},
+  {c:'9984',n:'SBG',            home:'ai',  also:['semi']},
+  // 島2 半導体
+  {c:'285A',n:'キオクシア',      home:'semi'},
+  {c:'6723',n:'ルネサス',        home:'semi'},
+  {c:'6526',n:'ソシオネクス',    home:'semi'},
+  // 島3 製造装置
+  {c:'8035',n:'東エレク',        home:'equip'},
+  {c:'6920',n:'レーザーテック',  home:'equip'},
+  {c:'6857',n:'アドバンテスト',  home:'equip'},
+  {c:'6146',n:'ディスコ',        home:'equip'},
+  {c:'7735',n:'SCREEN',         home:'equip'},
+  {c:'6525',n:'コクサイ',        home:'equip'},
+  {c:'6315',n:'TOWA',           home:'equip'},
+  {c:'6323',n:'ローツェ',        home:'equip'},
+  {c:'6254',n:'野村マイクロ',    home:'equip'},
+  {c:'7751',n:'キヤノン',        home:'equip'},
+  {c:'7731',n:'ニコン',          home:'equip'},
+  // 島4 材料
+  {c:'4063',n:'信越化学',        home:'mat'},
+  {c:'3436',n:'SUMCO',          home:'mat'},
+  {c:'4004',n:'レゾナック',      home:'mat', also:['parts']},
+  {c:'4062',n:'イビデン',        home:'mat', also:['parts']},
+  {c:'7741',n:'HOYA',           home:'mat'},
+  {c:'5384',n:'フジミインコ',    home:'mat'},
+  {c:'3110',n:'日東紡',          home:'mat', also:['parts']},
+  {c:'6855',n:'日本電子材料',    home:'mat'},
+  {c:'6890',n:'フェローテック',  home:'mat'},
+  // 島5 電子部品
+  {c:'6981',n:'村田製作所',      home:'parts'},
+  {c:'6976',n:'太陽誘電',        home:'parts'},
+  {c:'6762',n:'TDK',            home:'parts'},
+  {c:'6971',n:'京セラ',          home:'parts', also:['semi']},
+  {c:'6479',n:'ミネベアミツミ',  home:'parts', also:['phys']},
+  {c:'6997',n:'日本ケミコン',    home:'parts'},
+  {c:'6779',n:'日本電波工業',    home:'parts'},
+  {c:'5344',n:'MARUWA',         home:'parts', also:['mat']},
+  {c:'6787',n:'メイコー',        home:'parts'},
+  // 島6 電線
+  {c:'5803',n:'フジクラ',        home:'cable'},
+  {c:'5801',n:'古河電工',        home:'cable'},
+  {c:'5802',n:'住友電工',        home:'cable'},
+  // 島7 パワー半導体
+  {c:'6963',n:'ローム',          home:'power', also:['semi']},
+  {c:'6504',n:'富士電機',        home:'power'},
+  {c:'6503',n:'三菱電機',        home:'power', also:['phys']},
+  // 島8 フィジカルAI
+  {c:'6861',n:'キーエンス',      home:'phys'},
+  {c:'6954',n:'ファナック',      home:'phys'},
+  {c:'6506',n:'安川電機',        home:'phys'},
+  {c:'6273',n:'SMC',            home:'phys'},
+  {c:'6324',n:'ハーモニック',    home:'phys'},
+  {c:'6594',n:'ニデック',        home:'phys', also:['dc']},
+  {c:'6645',n:'オムロン',        home:'phys', also:['parts']},
+  // 島9 データセンター
+  {c:'3778',n:'サクラインターネット', home:'dc'},
+  {c:'3905',n:'データセクション',    home:'dc', also:['ai']},
+  {c:'6501',n:'日立',                home:'dc', also:['ai']},
+];
+
+/* ---- 業務内容（Geminiチェック済み確定版・固定焼き込み） ---- */
+const DESC = {
+  "9432": "固定・移動の通信最大手。日本語に強い独自の大規模言語モデルを開発し、生成AIや法人向けAIサービスを展開する。AIの計算需要を支えるデータセンター事業も国内外で拡大している。",
+  "9433": "大手通信キャリア。AIベンチャーを子会社化して生成AI開発に取り組むほか、大規模データセンターの整備を進め、AIインフラの担い手となっている。",
+  "6702": "総合ITベンダー大手。日本語特化の大規模言語モデルと、それを提供するAIプラットフォームを展開する。社会インフラ向けのシステム構築力に強みを持つ。",
+  "6701": "ITとネットワークの大手。企業向け生成AIサービスや独自の大規模言語モデルを開発する。半導体設計や海底ケーブルなど幅広い事業を持つ。※半導体にも関連",
+  "6758": "エンタメと電機の複合企業。スマートフォンやデジタルカメラに使われるCMOSイメージセンサーで世界首位級。端末側で動くエッジAIにも取り組む。※半導体にも関連",
+  "9984": "投資会社・通信グループ。傘下に半導体設計の中核企業を持ち、その回路設計の技術はAI向けからデータセンターまで広く使われる。AI分野への大型投資を進める。※半導体にも関連",
+  "285A": "NAND型フラッシュメモリーで世界大手。生成AIのデータ保存需要を背景に、大容量ストレージの中核を担う。旧東芝のメモリー事業を母体とする。",
+  "6723": "車載・産業用を中心とした半導体メーカー。マイコンやアナログ半導体を幅広く手がけ、AIを組み込む機器の頭脳となる製品を供給する。",
+  "6526": "システムLSIの設計を専門とするファブレス企業。顧客の用途に合わせたカスタム半導体を開発し、AIや高速通信向けの需要を取り込む。",
+  "8035": "半導体製造装置の世界大手。成膜・エッチング・洗浄など複数工程の装置を手がけ、最先端半導体の量産を支える。",
+  "6920": "半導体の回路原版（マスク）の検査装置に強みを持つ。最先端のEUV向け検査で独自の地位を築き、微細化の品質を支える。",
+  "6857": "半導体の動作を検査するテスト装置の大手。高性能化する半導体の検査需要を取り込み、AI半導体の量産品質を担保する。",
+  "6146": "半導体を切る・削る・磨く後工程装置で世界大手。チップの個片化に欠かせず、生成AI向け半導体の生産能力増強の恩恵を受ける。",
+  "7735": "半導体ウエハーの洗浄装置で世界大手。微細化が進むほど重要度が増す洗浄工程を担い、最先端ラインに装置を供給する。",
+  "6525": "成膜装置を主力とする半導体製造装置メーカー。薄膜を精密に積む工程を担い、メモリーやロジックの微細化を支える。",
+  "6315": "半導体の後工程、特に封止（パッケージング）装置で高シェア。チップを保護し実装する工程を担う。",
+  "6323": "半導体ウエハーの搬送装置に強みを持つ。製造装置内でウエハーを精密に運ぶ要素を供給し、装置メーカーを下支えする。",
+  "6254": "半導体工場向けの超純水製造装置を手がける。製造に不可欠な高純度の水を供給する設備で、工場新設の恩恵を受ける。",
+  "7751": "事務機やカメラの大手だが、半導体の露光装置も手がける。回路を焼き付ける工程を担い、新方式の露光技術も開発する。",
+  "7731": "精密機器大手。半導体の露光装置で歴史を持ち、回路パターンを基板に転写する工程を担う。計測・検査装置も手がける。",
+  "4063": "半導体の土台となるシリコンウエハーで世界首位級。フォトレジストなど複数の半導体材料も手がけ、業界の最上流を支える。",
+  "3436": "シリコンウエハーの世界大手。半導体すべての基板となる素材を供給し、半導体需要の増減に業績が連動する。",
+  "4004": "総合化学の一角。半導体の後工程で使うパッケージング材料に強く、AI半導体の高密度実装を支える。※電子部品にも関連",
+  "4062": "半導体パッケージ基板の大手。生成AI用GPUに不可欠とされる高層パッケージ基板で世界トップ級。AI半導体の性能を引き出す要となる。※電子部品にも関連",
+  "7741": "光学・電子部品の大手。半導体の回路原版（マスク）の素材となるマスクブランクスで高シェア。最先端の微細化を素材面で支える。",
+  "5384": "半導体の平坦化工程で使う研磨材（CMPスラリー）に強みを持つ。微細化が進むほど重要度が増す材料を供給する。",
+  "3110": "ガラス繊維の大手。生成AIサーバーの高速基板向けに、信号の遅れを抑える特殊なガラスクロスを供給し、AI需要で脚光を浴びる。※電子部品にも関連",
+  "6855": "半導体の検査に使う部材（プローブカード関連）を手がける。チップの良否を判定する工程を素材・部品面で支える。",
+  "6890": "半導体製造に使う部材を幅広く手がける。石英・セラミックスなど装置内の消耗部材を供給し、半導体生産を下支えする。",
+  "6981": "電子部品の総合大手。積層セラミックコンデンサーで世界首位。スマホからAIサーバーまであらゆる電子機器に部品を供給する。",
+  "6976": "積層セラミックコンデンサーの大手。小型・高容量品に強く、AI機器や車載向けで需要を取り込む。",
+  "6762": "電子部品大手。スマホ用電池や積層セラミックコンデンサーに強い。AI機器やデータセンター向けの部品需要を取り込む。",
+  "6971": "電子部品からセラミックパッケージまで手がける総合メーカー。半導体用パッケージで高シェアを持つ。※半導体にも関連",
+  "6479": "ベアリングやモーター、半導体・電子部品を併せ持つ複合部品メーカー。精密機械要素はロボットの駆動部にも使われる。※フィジカルAIにも関連",
+  "6997": "アルミ電解コンデンサーで世界首位級。電源回路に欠かせない部品を供給し、AIサーバーや産業機器向けで需要を取り込む。",
+  "6779": "水晶デバイスの大手。電子機器の基準信号を生む部品を供給し、通信機器や車載向けで世界シェアを持つ。",
+  "5344": "特殊セラミックスの部品メーカー。AIサーバーの発熱対策に重要な放熱基板で高シェアを持ち、生成AI需要の恩恵を受ける。※半導体材料にも関連",
+  "6787": "プリント基板の大手。電子部品を実装する基板を手がけ、AI機器や車載向けの高密度基板需要を取り込む。",
+  "5803": "電線・ケーブル大手。光ファイバーの技術に強く、生成AIで急増するデータセンター向けの配線需要で成長している。",
+  "5801": "電線・ケーブル大手。光ファイバーケーブルに強みを持ち、データセンターや通信網の更新需要を取り込む。",
+  "5802": "電線の国内首位級。光ファイバーから自動車向けワイヤハーネスまで幅広く手がけ、AIインフラの配線需要を取り込む。",
+  "6963": "車載・産業向けの半導体に強いメーカー。電力を効率よく制御するパワー半導体を育成中で、通常の半導体も手がける。※半導体にも関連",
+  "6504": "パワー半導体の大手。電力を変換・制御する半導体で世界シェアを持ち、データセンターのサーバー電源やインフラ向けの需要を取り込む。",
+  "6503": "総合電機大手。パワー半導体で世界上位。FA機器や産業ロボットも手がけ、AIを実装する設備の担い手でもある。※フィジカルAIにも関連",
+  "6861": "センサーやFA機器の大手。工場の自動化に使う検出機器やマシンビジョンに強く、フィジカルAIの目と感覚を担う。",
+  "6954": "産業用ロボットと工作機械の制御装置で世界大手。工場の自動化を担い、フィジカルAIの中核となる。",
+  "6506": "サーボモーターと産業用ロボットの大手。機械を精密に動かす駆動技術を持ち、ロボティクスの要となる。",
+  "6273": "工場の自動化に使う空気圧制御機器で世界大手。ロボットや製造装置を動かす要素部品を供給する。",
+  "6324": "ロボット用の精密減速機で世界大手。関節を精密に動かす要素部品を供給し、フィジカルAIの動きを支える。",
+  "6594": "モーターの世界大手。生成AIサーバーの発熱を抑える水冷モジュールで需要が急拡大。車載や家電のモーターも幅広く手がける。※データセンターにも関連",
+  "6645": "FA用の制御機器が中核。工場の自動化に使う機器やセンサー、リレーなどを幅広く手がける。※電子部品にも関連",
+  "3778": "国産のクラウド・データセンター事業者。北海道の大規模拠点でAI向けのGPUクラウドを展開し、国内のAI計算基盤を担う。",
+  "3905": "AIデータ分析の新興企業。液冷GPUデータセンターの構築やGPUクラウドサービスを展開し、AIインフラの担い手として急成長している。※AIにも関連",
+  "6501": "総合電機・ITの大手。AI活用基盤による事業展開と、データセンターの構築・ストレージなどITインフラを手がける。※AIにも関連"
+};
+
+/* ---- 島間の取引エッジ（有向10本・Gemini監査済みDAG） ---- */
+const TRADE_EDGES = [
+  ['mat',   'semi'],   // 材料 → 半導体（ウエハ・スラリー等）
+  ['equip', 'semi'],   // 製造装置 → 半導体（露光・テスト装置等）
+  ['mat',   'parts'],  // 材料 → 電子部品（パッケージ基板材料・低誘電ガラスクロス等）
+  ['semi',  'dc'],     // 半導体 → データセンター（AI用GPU・HBM等）
+  ['parts', 'dc'],     // 電子部品 → データセンター（MLCC・水冷モジュール等）
+  ['power', 'dc'],     // パワー半導体 → データセンター（サーバー用高効率電源）
+  ['cable', 'dc'],     // 電線・ケーブル → データセンター（光ファイバー・内部配線）
+  ['parts', 'phys'],   // 電子部品 → フィジカルAI（センサー・ベアリング等）
+  ['power', 'phys'],   // パワー半導体 → フィジカルAI（モーター駆動用インバータ）
+  ['dc',    'ai'],     // データセンター → AI・LLM（計算基盤・GPUクラウド）
+];
+
+/* rScale: domain[0.3, 22] 兆円, clamp で域外を端値に固定（小型株の負値・非表示を防ぐ） */
+const rScale  = d3.scaleSqrt().domain([0.3,22]).range([4,18]).clamp(true);
+const radius  = (s)=> rScale(s.mcap);
+const radiusG = (s)=> rScale(s.mcap)*0.62;
+
+const chgColor = (v)=> v>0.05?'var(--up)' : v<-0.05?'var(--down)' : 'var(--flat)';
+
+const svg = d3.select('#map');
+const W=1600, H=1000;
+svg.append('defs').html(
+  '<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'+
+  '<path d="M0,0 L10,5 L0,10 z" fill="var(--bridge)"></path></marker>'
+);
+const root    = svg.append('g');
+const gBridge = root.append('g');
+const gIsland = root.append('g');
+const gNode   = root.append('g');
+
+const tip    = document.getElementById('tip');
+const crumbs = document.getElementById('crumbs');
+const back   = document.getElementById('back');
+const hint   = document.getElementById('hint');
+
+
+let mode='global', activeIsland=null, lastUpdated=null;
+
+/* 各島に属するノード：home島 ＋ also島の両方に実ノードとして出す（71ノード・54ユニーク） */
+function islandMembers(key){
+  return STOCKS.filter(s => s.home===key || (s.also||[]).includes(key));
+}
+
+const icx = k=>ISLANDS[k].pos[0], icy = k=>ISLANDS[k].pos[1];
+
+/* ============ 大域ビュー描画 ============ */
+function drawGlobal(){
+  mode='global'; activeIsland=null;
+  back.style.display='none';
+  const updPart = lastUpdated
+    ? ` <span style="font-size:10px;color:var(--ink-faint)">${new Date(lastUpdated).toLocaleDateString('ja-JP',{month:'2-digit',day:'2-digit'})}更新</span>`
+    : '';
+  crumbs.innerHTML=`<b>大域ビュー</b> ／ 9島 54銘柄${updPart}`;
+  hint.style.opacity='1'; hint.textContent='島をクリックすると内部構造が開きます';
+
+  gBridge.selectAll('*').remove();
+  gIsland.selectAll('*').remove();
+  gNode.selectAll('*').remove();
+
+  /* 島（円盤）のサイズを先に算出。エッジの端点に使うため描画前に計算。 */
+  const discR = {};
+  Object.keys(ISLANDS).forEach(k=>{
+    const mem=islandMembers(k);
+    const area=mem.reduce((a,s)=>a+Math.PI*radius(s)*radius(s),0);
+    discR[k]=Math.max(64, Math.sqrt(area/Math.PI)*1.7 + 14);
+  });
+
+  /* 島間の取引エッジ（有向・矢印付き） */
+  gBridge.selectAll('path').data(TRADE_EDGES).join('path')
+    .attr('d',([a,b])=>{
+      const x1=icx(a),y1=icy(a),x2=icx(b),y2=icy(b);
+      const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L;
+      const sx=x1+ux*discR[a], sy=y1+uy*discR[a];
+      const ex=x2-ux*(discR[b]+11), ey=y2-uy*(discR[b]+11);
+      return `M${sx},${sy} L${ex},${ey}`;
+    })
+    .attr('fill','none')
+    .attr('stroke','var(--bridge)')
+    .attr('stroke-width',1.4)
+    .attr('stroke-opacity',.5)
+    .attr('marker-end','url(#arrow)')
+    .style('cursor','pointer')
+    .on('mouseenter',function(){d3.select(this).attr('stroke','var(--bridge-hot)').attr('stroke-opacity',.95)})
+    .on('mouseleave',function(){d3.select(this).attr('stroke','var(--bridge)').attr('stroke-opacity',.5)});
+
+  const isl = gIsland.selectAll('g.isl').data(Object.keys(ISLANDS)).join('g')
+    .attr('class','isl')
+    .attr('transform',k=>`translate(${icx(k)},${icy(k)})`)
+    .style('cursor','pointer')
+    .on('click',(e,k)=>enterIsland(k))
+    .on('mouseenter',function(){d3.select(this).select('.disc').attr('stroke','var(--bridge-hot)').attr('stroke-opacity',.9)})
+    .on('mouseleave',function(){d3.select(this).select('.disc').attr('stroke','var(--line-soft)').attr('stroke-opacity',1)});
+
+  isl.append('circle').attr('class','disc')
+    .attr('r',k=>discR[k]).attr('fill','rgba(15,29,51,.55)')
+    .attr('stroke','var(--line-soft)').attr('stroke-width',1.2);
+
+  /* 島内に実銘柄ノードをパッキング配置。大域で見える点＝クリック後の中身と1対1。 */
+  isl.each(function(k){
+    const g  =d3.select(this);
+    const mem=islandMembers(k).map((s,i)=>({...s, x:Math.cos(i*1.2)*40, y:Math.sin(i*1.2)*40}));
+    const R  =discR[k]-10;
+    const sim=d3.forceSimulation(mem)
+      .force('charge', d3.forceManyBody().strength(-4))
+      .force('center', d3.forceCenter(0,0))
+      .force('collide', d3.forceCollide().radius(d=>radiusG(d)+2))
+      .force('bound', ()=>{mem.forEach(d=>{const dist=Math.hypot(d.x,d.y),max=R-radiusG(d);if(dist>max){d.x=d.x/dist*max;d.y=d.y/dist*max}})})
+      .stop();
+    for(let i=0;i<120;i++) sim.tick();
+    g.selectAll('circle.mn').data(mem).join('circle').attr('class','mn')
+      .attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',d=>radiusG(d))
+      .attr('fill',d=>chgColor(d.chg)).attr('fill-opacity',.9)
+      .attr('stroke',d=>(d.also&&d.also.length)?'var(--bridge-hot)':'none')
+      .attr('stroke-width',d=>(d.also&&d.also.length)?1.2:0)
+      .style('cursor','pointer')
+      .on('mousemove',(e,d)=>showNodeTip(e,d))
+      .on('mouseleave',hideTip)
+      .on('click',(e)=>{e.stopPropagation();enterIsland(k)});
+  });
+
+  isl.append('text').attr('class','island-label').attr('text-anchor','middle')
+    .attr('y',k=>-discR[k]-14).text(k=>ISLANDS[k].name);
+  isl.append('text').attr('class','island-sub').attr('text-anchor','middle')
+    .attr('y',k=>-discR[k]-14+15).text(k=>ISLANDS[k].sub);
+  isl.append('text').attr('class','island-sub').attr('text-anchor','middle')
+    .attr('y',k=>discR[k]+18).attr('fill','var(--ink-faint)')
+    .text(k=>islandMembers(k).length+'銘柄');
+}
+
+/* ============ 局所ビュー（島クリックで遷移） ============ */
+function enterIsland(key){
+  mode='local'; activeIsland=key;
+  back.style.display='inline-flex';
+  crumbs.innerHTML=`大域ビュー ／ <b>${ISLANDS[key].name}</b>`;
+  hint.style.opacity='0';
+
+  gBridge.selectAll('*').remove();
+  gIsland.selectAll('*').remove();
+  gNode.selectAll('*').remove();
+
+  const mem  =islandMembers(key);
+  const cx=W/2, cy=H/2+10;
+  const nodes=mem.map((s,i)=>({...s, x:cx+Math.cos(i*1.3)*140, y:cy+Math.sin(i*1.3)*140}));
+
+  /* 出口マーカー：取引先の島への「→ 島名」/「← 島名」。クリックでその島へ遷移。 */
+  const exits=[];
+  TRADE_EDGES.forEach(([a,b])=>{
+    if(a===key) exits.push({to:b,dir:'out'});
+    if(b===key) exits.push({to:a,dir:'in'});
+  });
+
+  const titleG=gNode.append('g');
+  titleG.append('text').attr('x',cx).attr('y',158).attr('text-anchor','middle')
+    .attr('class','island-label').style('font-size','22px').text(ISLANDS[key].name);
+  titleG.append('text').attr('x',cx).attr('y',158+20).attr('text-anchor','middle')
+    .attr('class','island-sub').text(ISLANDS[key].sub+' ・ '+mem.length+'銘柄');
+
+  const nodeSel=gNode.selectAll('g.nd').data(nodes).join('g').attr('class','nd')
+    .style('cursor','pointer')
+    .on('mousemove',(e,d)=>showNodeTip(e,d)).on('mouseleave',hideTip);
+
+  nodeSel.append('circle').attr('r',d=>radius(d))
+    .attr('fill',d=>chgColor(d.chg)).attr('fill-opacity',.9)
+    .attr('stroke',d=>(d.also&&d.also.length)?'var(--bridge-hot)':'none')
+    .attr('stroke-width',d=>(d.also&&d.also.length)?2:0);
+  nodeSel.append('text').attr('class','node-label').attr('text-anchor','middle')
+    .attr('dy',d=>radius(d)+13).text(d=>d.n);
+
+  const edgeG=gNode.append('g');
+  exits.forEach((x,i)=>{
+    const ang=(i/exits.length)*Math.PI*2 - Math.PI/2;
+    const R=400;
+    const ex=cx+Math.cos(ang)*R, ey=cy+Math.sin(ang)*R*0.58;
+    edgeG.append('line').attr('x1',cx).attr('y1',cy).attr('x2',ex).attr('y2',ey)
+      .attr('stroke','var(--bridge)').attr('stroke-width',1).attr('stroke-dasharray','3 4').attr('stroke-opacity',.45);
+    const lab=edgeG.append('g').attr('transform',`translate(${ex},${ey})`)
+      .style('cursor','pointer').on('click',()=>enterIsland(x.to));
+    const txt=(x.dir==='out'?'→ ':'← ')+ISLANDS[x.to].name;
+    const w=txt.length*12+24;
+    lab.append('rect').attr('x',-w/2).attr('y',-14).attr('width',w).attr('height',28).attr('rx',14)
+      .attr('fill','rgba(10,19,34,.92)').attr('stroke','var(--bridge)').attr('stroke-width',1);
+    lab.append('text').attr('text-anchor','middle').attr('dy',4.5)
+      .attr('class','island-sub').style('font-family','var(--sans)').attr('fill','var(--ink-dim)')
+      .style('font-size','12px').text(txt);
+    lab.on('mouseenter',function(){d3.select(this).select('rect').attr('stroke','var(--bridge-hot)');d3.select(this).select('text').attr('fill','var(--ink)')})
+       .on('mouseleave',function(){d3.select(this).select('rect').attr('stroke','var(--bridge)');d3.select(this).select('text').attr('fill','var(--ink-dim)')});
+  });
+
+  /* 銘柄間リンクなし。重なり回避の力学配置のみ。 */
+  d3.forceSimulation(nodes)
+    .force('charge', d3.forceManyBody().strength(-260))
+    .force('center', d3.forceCenter(cx,cy))
+    .force('collide', d3.forceCollide().radius(d=>radius(d)+24))
+    .force('ring', d3.forceRadial(150,cx,cy).strength(.04))
+    .on('tick',()=>{ nodeSel.attr('transform',d=>`translate(${d.x},${d.y})`); });
+
+}
+
+/* ============ ツールチップ ============ */
+function showNodeTip(e,s){
+  const sign=s.chg>0?'+':'';
+  const priceStr = s.price != null ? `¥${Math.round(s.price).toLocaleString()}` : '—';
+  const also=(s.also&&s.also.length)
+    ? `<div class="also">島またぎ：<b>${[ISLANDS[s.home].name,...s.also.map(o=>ISLANDS[o].name)].join(' ⇔ ')}</b></div>`:'';
+  tip.innerHTML=`<div class="nm">${s.n}</div><div class="cd">${s.c}</div>
+    <div class="pr"><span style="color:var(--ink-faint)">${priceStr}</span>
+    <span class="chg" style="color:${chgColor(s.chg)}">${sign}${(s.chg||0).toFixed(2)}%</span></div>${also}`;
+  placeTip(e);
+}
+function placeTip(e){
+  tip.classList.add('on');
+  const pad=14;
+  let x=e.clientX+pad, y=e.clientY+pad;
+  const r=tip.getBoundingClientRect();
+  if(x+r.width>innerWidth-8)  x=e.clientX-r.width-pad;
+  if(y+r.height>innerHeight-8) y=e.clientY-r.height-pad;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+function hideTip(){tip.classList.remove('on')}
+
+back.addEventListener('click',()=>{
+  drawGlobal();
+});
+
+/* ============ 下部：SEO用の銘柄一覧（コード・銘柄名・業務内容は静的、株価・前日比はJSで最新化） ============ */
+function renderList(){
+  const el=document.getElementById('list');
+  const lead=`AIブームの中心にある日本の上場企業を、サプライチェーン上の9つのセクター（島）に分類し、`
+    +`相互の取引関係とともに地図化したものです。各銘柄のコード・社名・事業概要は固定で掲載し、`
+    +`株価と前日比は毎営業日の更新で反映します（正常更新時は緑で表示）。`;
+  let html=`<p class="lead">${lead}</p>`;
+  Object.keys(ISLANDS).forEach(k=>{
+    const mem=STOCKS.filter(s=>s.home===k); // homeの島のみ掲載（重複コンテンツ回避）
+    html+=`<div class="sec"><div class="sec-h"><h2>${ISLANDS[k].name}</h2>`
+      +`<span class="en">${ISLANDS[k].sub}</span><span class="cnt">${mem.length}銘柄</span></div>`;
+    mem.forEach(s=>{
+      const sign=s.chg>0?'+':'';
+      const col =s.chg>0?'var(--up)':s.chg<-0.05?'var(--down)':'var(--flat)';
+      const arrow=s.chg>0?'▲':s.chg<-0.05?'▼':'–';
+      const cross=(s.also&&s.also.length)
+        ? ` <span class="x">※${s.also.map(o=>ISLANDS[o].name).join('・')}にも関連</span>`:'';
+      const st       =s.fresh?`<span class="st" title="正常更新"></span>`:'';
+      const priceDisp=s.price != null ? Math.round(s.price).toLocaleString() : '—';
+      html+=`<div class="row">`
+        +`<span class="cd">${s.c}</span>`
+        +`<span class="nm">${s.n}</span>`
+        +`<span class="pr">${priceDisp}${st}</span>`
+        +`<span class="chg" style="color:${col}">${arrow}${sign}${(s.chg||0).toFixed(2)}%</span>`
+        +`<span class="ds">${DESC[s.c]}${cross}</span>`
+        +`</div>`;
+    });
+    html+=`</div>`;
+  });
+  el.innerHTML=html;
+}
+
+/* ============ 初期化：data.json 取得 → 描画 ============ */
+async function init(){
+  // data.json 取得前のデフォルト値（全銘柄・フラット表示）
+  STOCKS.forEach(s=>{ s.price=null; s.chg=0; s.mcap=1.0; s.fresh=false; });
+  try {
+    const res = await fetch('data.json?_='+Date.now());
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const sd   = data.stocks || {};
+    STOCKS.forEach(s=>{
+      const d = sd[s.c] || {};
+      s.price = d.price ?? null;
+      s.chg   = d.change_pct ?? 0;
+      // mcap: 0.05兆円を下限とし、未取得時は1.0（デフォルトサイズ）
+      s.mcap  = d.mcap_trillion != null ? Math.max(d.mcap_trillion, 0.05) : 1.0;
+      s.fresh = (d.status === 'ok');
+    });
+    if(data._meta && data._meta.generated_at){
+      lastUpdated = data._meta.generated_at;
+    }
+  } catch(e){
+    console.warn('data.json 読み込み失敗（デフォルト値で表示）:', e);
+  }
+  drawGlobal();
+  renderList();
+}
+
+init();
+</script>
+</body>
+</html>
