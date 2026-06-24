@@ -24,6 +24,7 @@
     --accent:#6fa8ff;
     --mono:'SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,sans-serif;
+    --hdr:240px;
   }
   *{box-sizing:border-box}
   html,body{margin:0;min-height:100%}
@@ -34,21 +35,33 @@
       var(--sea-0);
     color:var(--ink);font-family:var(--sans);
   }
-  #stage{position:relative;width:100vw;height:100vh}
+
+  /* ── ページヘッダー（他ページ共通レイアウト）── */
+  .nav-container{max-width:960px;margin:0 auto;padding:10px 22px;border-bottom:1px solid var(--line-soft)}
+  .nav-container a{color:var(--ink-dim);text-decoration:none;font-size:14px;font-family:var(--mono)}
+  .nav-container a:hover{color:var(--ink)}
+  .page-header{max-width:960px;margin:0 auto;padding:28px 22px 22px;border-bottom:1px solid var(--line-soft)}
+  .ph-kicker{font-family:var(--mono);font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .ph-h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+  .ph-h1 .man{color:var(--accent)}
+  .ph-h1 .ph-badge{font-family:var(--mono);color:var(--ink-dim);font-weight:400;font-size:.65em;margin-left:10px}
+  .site-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+  .site-nav-label{font-size:.78rem;color:var(--ink-faint);margin-right:4px}
+  .site-nav a{font-size:.78rem;font-weight:700;color:#0a0e14;background:#d4a548;
+    border:1px solid #d4a548;border-radius:6px;padding:5px 14px;text-decoration:none}
+  .site-nav a:hover{opacity:.85}
+  .ph-tagline{color:var(--ink-dim);font-size:.9rem;margin-top:12px;max-width:640px;line-height:1.7}
+  .ph-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:14px;
+    font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)}
+  .ph-meta b{color:var(--ink-dim);font-weight:500}
+
+  /* ── 地図エリア ── */
+  #stage{position:relative;width:100vw;height:calc(100vh - var(--hdr));min-height:480px}
   svg{width:100%;height:100%;display:block;cursor:default}
 
-  /* ヘッダ */
-  .topbar{
-    position:absolute;top:0;left:0;right:0;z-index:20;
-    display:flex;align-items:baseline;gap:14px;
-    padding:14px 18px 22px;
-    background:linear-gradient(180deg, rgba(5,8,15,.92) 0%, rgba(5,8,15,0) 100%);
-    pointer-events:none;
-  }
-  .brand{font-size:15px;letter-spacing:.06em;font-weight:600}
-  .brand .man{color:var(--accent)}
-  .sub{font-size:11.5px;color:var(--ink-dim);letter-spacing:.04em}
-  .crumbs{font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);margin-left:auto;pointer-events:auto}
+  /* 現在地パンくず（地図内オーバーレイ）*/
+  .crumbs{position:absolute;top:10px;right:16px;z-index:20;
+    font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);pointer-events:none}
   .crumbs b{color:var(--ink-dim);font-weight:500}
 
   /* 凡例＋戻る */
@@ -100,7 +113,7 @@
   /* 下部：SEO用の銘柄一覧 */
   .scroll-cue{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:15;
     font-size:11px;color:var(--ink-faint);letter-spacing:.05em;pointer-events:none}
-  #list{max-width:1080px;margin:0 auto;padding:30px 22px 80px}
+  #list{max-width:960px;margin:0 auto;padding:30px 22px 80px}
   #list .lead{font-size:12.5px;color:var(--ink-dim);line-height:1.8;margin:0 0 26px;
     border-left:2px solid var(--line-soft);padding-left:14px}
   .sec{margin:0 0 30px}
@@ -126,21 +139,43 @@
     .row .ds{grid-column:1/-1;color:var(--ink-faint)}
   }
   footer.disclaimer{
-    max-width:1080px;margin:0 auto;padding:20px 22px 40px;
+    max-width:960px;margin:0 auto;padding:20px 22px 40px;
     font-size:11px;color:var(--ink-faint);line-height:1.7;
     border-top:1px solid var(--line-soft);
   }
 </style>
 </head>
 <body>
-<div id="stage">
-  <div class="topbar">
-    <span class="brand">AI関連銘柄の<span class="man">多様体</span></span>
-    <span class="sub">業界地図</span>
-    <span class="crumbs" id="crumbs"><b>大域ビュー</b> ／ 9島 54銘柄</span>
-  </div>
 
-  <svg id="map" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice"></svg>
+<!-- ── トップへの戻りリンク ── -->
+<div class="nav-container">
+  <a href="https://xdbdb.com/">&larr; 数理投資情報部 トップ</a>
+</div>
+
+<!-- ── ページヘッダー ── -->
+<header class="page-header" id="page-header">
+  <div class="ph-kicker">AI Manifold / Industry Map</div>
+  <h1 class="ph-h1">AI関連銘柄の<span class="man">多様体</span><span class="ph-badge">業界地図</span></h1>
+  <nav class="site-nav">
+    <span class="site-nav-label">数理投資情報部の他の分析 ▶</span>
+    <a href="https://xdbdb.com/sbg-nav/">SBG 理論株価モニター</a>
+    <a href="https://xdbdb.com/crypto-nav/">暗号通貨トレジャリー企業 mNAVモニター</a>
+    <a href="https://xdbdb.com/kioxia-sandisk/">キオクシア×サンディスク PER</a>
+    <a href="https://xdbdb.com/momentum-corr/">モメンタム相関係数</a>
+    <a href="https://xdbdb.com/">トップ</a>
+  </nav>
+  <p class="ph-tagline">AI関連の日本株54銘柄をサプライチェーン上の9つのセクター（島）に分類し、島間の取引関係とともに業界構造を地図化したものです。島をクリックすると内部構造が展開されます。</p>
+  <div class="ph-meta">
+    <span><b>生成：</b><span id="ph-generated">—</span></span>
+    <span><b>基準：</b>東京市場クローズ後（毎朝更新）</span>
+  </div>
+</header>
+
+<!-- ── 地図エリア ── -->
+<div id="stage">
+  <span class="crumbs" id="crumbs"><b>大域ビュー</b> ／ 9島 54銘柄</span>
+
+  <svg id="map" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet"></svg>
 
   <div class="hint" id="hint">島をクリックすると内部構造が開きます</div>
 
@@ -360,10 +395,7 @@ const icx = k=>ISLANDS[k].pos[0], icy = k=>ISLANDS[k].pos[1];
 function drawGlobal(){
   mode='global'; activeIsland=null;
   back.style.display='none';
-  const updPart = lastUpdated
-    ? ` <span style="font-size:10px;color:var(--ink-faint)">${new Date(lastUpdated).toLocaleDateString('ja-JP',{month:'2-digit',day:'2-digit'})}更新</span>`
-    : '';
-  crumbs.innerHTML=`<b>大域ビュー</b> ／ 9島 54銘柄${updPart}`;
+  crumbs.innerHTML=`<b>大域ビュー</b> ／ 9島 54銘柄`;
   hint.style.opacity='1'; hint.textContent='島をクリックすると内部構造が開きます';
 
   gBridge.selectAll('*').remove();
@@ -569,6 +601,13 @@ function renderList(){
 
 /* ============ 初期化：data.json 取得 → 描画 ============ */
 async function init(){
+  // ヘッダー高さを計測して #stage の高さを調整
+  const hdrEl = document.getElementById('page-header');
+  if(hdrEl){
+    const navH = hdrEl.previousElementSibling ? hdrEl.previousElementSibling.offsetHeight : 0;
+    document.documentElement.style.setProperty('--hdr', (hdrEl.offsetHeight + navH) + 'px');
+  }
+
   // data.json 取得前のデフォルト値（全銘柄・フラット表示）
   STOCKS.forEach(s=>{ s.price=null; s.chg=0; s.mcap=1.0; s.fresh=false; });
   try {
@@ -586,6 +625,12 @@ async function init(){
     });
     if(data._meta && data._meta.generated_at){
       lastUpdated = data._meta.generated_at;
+      // ヘッダーの生成日時を更新
+      const dt = new Date(data._meta.generated_at);
+      const s = dt.toLocaleString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',
+        hour:'2-digit',minute:'2-digit',timeZone:'Asia/Tokyo'});
+      const el = document.getElementById('ph-generated');
+      if(el) el.textContent = s + ' JST';
     }
   } catch(e){
     console.warn('data.json 読み込み失敗（デフォルト値で表示）:', e);
