@@ -60,13 +60,20 @@
   svg{width:100%;height:100%;display:block;cursor:default}
 
   /* 現在地パンくず（地図内オーバーレイ）*/
-  .crumbs{position:absolute;top:10px;right:16px;z-index:20;
-    font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);pointer-events:none}
+  /* max() で、地図コンテンツ左右端からの内側インセットに合わせる。
+     viewBox 1600:1000 → 縦基準のとき地図幅 = (100vh - hdr) * 1.6
+     横マージン = (100vw - 地図幅) / 2  →  右端 offset = margin + 18px */
+  .crumbs{position:absolute;
+    top:14px;
+    right:max(18px, calc((100vw - (100vh - var(--hdr)) * 1.6) / 2 + 18px));
+    z-index:20;font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);pointer-events:none}
   .crumbs b{color:var(--ink-dim);font-weight:500}
 
   /* 凡例＋戻る */
   .hud{
-    position:absolute;left:18px;bottom:16px;z-index:20;
+    position:absolute;
+    left:max(18px, calc((100vw - (100vh - var(--hdr)) * 1.6) / 2 + 18px));
+    bottom:20px;z-index:20;
     display:flex;flex-direction:column;gap:8px;font-size:11px;color:var(--ink-dim);
   }
   .legend{display:flex;gap:14px;align-items:center;
