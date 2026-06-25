@@ -1,9 +1,13 @@
 name: Update AI-Manifold Data
 
+# cron-job.org から JST 05:30 に workflow_dispatch をトリガーする(内蔵スケジュールなし)
+# ※内蔵 schedule を残すと外部cronと二重起動になるため削除済み。
 on:
-  schedule:
-    - cron: '30 20 * * 0-4'  # Mon-Fri 5:30 JST (= Sun-Thu 20:30 UTC)
   workflow_dispatch:
+
+concurrency:
+  group: update-ai-manifold-data
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -29,5 +33,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data.json
-          git diff --staged --quiet || git commit -m "chore: update data.json $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-          git push
+          if git diff --staged --quiet; then
+            echo "data.json に変更なし。コミットをスキップします。"
+          else
+            git commit -m "chore: update data.json $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            git pull --rebase origin master
+            git push
+          fi

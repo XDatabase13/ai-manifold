@@ -5,7 +5,7 @@
 import json
 import sys
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date as _date
 from pathlib import Path
 
 import yfinance as yf
@@ -21,6 +21,7 @@ DATA_PATH  = SCRIPT_DIR / "data.json"
 JST            = timezone(timedelta(hours=9))
 MAX_RETRIES    = 5
 RETRY_INTERVAL = 10  # 秒
+STALE_DAYS     = 5   # 取得日付が本日からこの日数を超えると古いとみなし前回値を保持（他4サイト＋ハブと同じ作法）
 
 # 54銘柄（ユニーク）。yfinanceティッカーは末尾に .T を付ける
 STOCK_CODES = [
@@ -132,9 +133,20 @@ def main():
         price, chg, mcap, date = fetch_one(code)
 
         if price is not None:
-            status = "ok"
-            mcap_disp = f"{mcap}T" if mcap is not None else "—"
-            print(f"  {code:5s}  {price:>10.1f}  {(chg or 0):+.2f}%  mcap={mcap_disp}  [{date}]")
+            # 取得は成功したが日付が STALE_DAYS 超に古い → 前回値を保持（日付が古いデータを採用しない）
+            age = (_date.today() - _date.fromisoformat(date)).days if date else None
+            if age is not None and age > STALE_DAYS and p0.get("price") is not None:
+                print(f"  {code:5s}  警告: データが{age}日前 ({date}) > STALE_DAYS({STALE_DAYS}) → 前回値保持")
+                price = p0.get("price")
+                chg   = p0.get("change_pct")
+                mcap  = p0.get("mcap_trillion")
+                date  = p0.get("date")
+                status    = "stale"
+                any_stale = True
+            else:
+                status = "ok"
+                mcap_disp = f"{mcap}T" if mcap is not None else "—"
+                print(f"  {code:5s}  {price:>10.1f}  {(chg or 0):+.2f}%  mcap={mcap_disp}  [{date}]")
         else:
             # 前回値でフォールバック
             price = p0.get("price")
