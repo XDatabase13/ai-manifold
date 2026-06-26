@@ -50,7 +50,8 @@
   .site-nav a{font-size:.78rem;font-weight:700;color:#0a0e14;background:#d4a548;
     border:1px solid #d4a548;border-radius:6px;padding:5px 14px;text-decoration:none}
   .site-nav a:hover{opacity:.85}
-  .ph-tagline{color:var(--ink-dim);font-size:.9rem;margin-top:12px;max-width:720px;line-height:1.7}
+  #ai-lead{max-width:960px;margin:0 auto;padding:20px 22px}
+  .lead-text{padding:14px 18px;background:var(--sea-2);border:1px solid var(--line);border-radius:10px;font-size:.88rem;color:var(--ink-dim);line-height:1.85}
   .ph-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:14px;
     font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)}
   .ph-meta b{color:var(--ink-dim);font-weight:500}
@@ -180,12 +181,15 @@
     <a href="https://xdbdb.com/momentum-corr/">モメンタム相関係数</a>
     <a href="https://xdbdb.com/">トップ</a>
   </nav>
-  <p class="ph-tagline">AI関連の日本株54銘柄を、半導体・製造装置・材料・電子部品・電線・パワー半導体・フィジカルAI・データセンター・AI／LLMという9つのセクター（島）に分類し、サプライチェーン上の取引関係とともに地図化した業界地図（カオスマップ）です。各銘柄が生成AIのエコシステムのどこを担っているかを俯瞰でき、島をクリックすると内部の銘柄構造が展開されます。株価・前日比は毎営業日更新です。</p>
   <div class="ph-meta">
     <span><b>生成：</b><span id="ph-generated">—</span></span>
     <span><b>基準：</b>東京市場クローズ後（毎朝更新）</span>
   </div>
 </header>
+
+<div id="ai-lead">
+  <div class="lead-text">AI関連の日本株54銘柄を、半導体・製造装置・材料・電子部品・電線・パワー半導体・フィジカルAI・データセンター・AI／LLMという9つのセクター（島）に分類し、サプライチェーン上の取引関係とともに地図化した業界地図（カオスマップ）です。各銘柄が生成AIのエコシステムのどこを担っているかを俯瞰でき、島をクリックすると内部の銘柄構造が展開されます。株価・前日比は毎営業日更新です。</div>
+</div>
 
 <!-- ── 地図エリア ── -->
 <div id="stage">
@@ -627,7 +631,8 @@ async function init(){
   const hdrEl = document.getElementById('page-header');
   if(hdrEl){
     const navH = hdrEl.previousElementSibling ? hdrEl.previousElementSibling.offsetHeight : 0;
-    document.documentElement.style.setProperty('--hdr', (hdrEl.offsetHeight + navH) + 'px');
+    const leadEl = document.getElementById('ai-lead');
+    document.documentElement.style.setProperty('--hdr', (hdrEl.offsetHeight + navH + (leadEl ? leadEl.offsetHeight : 0)) + 'px');
   }
 
   // data.json 取得前のデフォルト値（全銘柄・フラット表示）
