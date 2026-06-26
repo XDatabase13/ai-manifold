@@ -50,7 +50,7 @@
   .site-nav a{font-size:.78rem;font-weight:700;color:#0a0e14;background:#d4a548;
     border:1px solid #d4a548;border-radius:6px;padding:5px 14px;text-decoration:none}
   .site-nav a:hover{opacity:.85}
-  .ph-tagline{color:var(--ink-dim);font-size:.9rem;margin-top:12px;max-width:640px;line-height:1.7}
+  .ph-tagline{color:var(--ink-dim);font-size:.9rem;margin-top:12px;max-width:720px;line-height:1.7}
   .ph-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:14px;
     font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)}
   .ph-meta b{color:var(--ink-dim);font-weight:500}
@@ -150,6 +150,15 @@
     font-size:11px;color:var(--ink-faint);line-height:1.7;
     border-top:1px solid var(--line-soft);
   }
+  .lead ul{margin:4px 0 8px;padding-left:1.4em}
+  .lead li{margin-bottom:3px}
+  .lead-h{font-weight:600;color:var(--ink);font-size:12.5px;margin:0 0 8px}
+  .lead p{margin:0}
+  .seo-section{max-width:960px;margin:44px auto 0;padding:28px 22px 0;border-top:1px solid var(--line)}
+  .seo-section h2{font-size:.95rem;font-weight:700;color:var(--ink);margin:26px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line-soft)}
+  .seo-section h2:first-of-type{margin-top:0}
+  .seo-section p{font-size:.84rem;color:var(--ink-dim);line-height:1.9}
+  .seo-section p+p{margin-top:8px}
 </style>
 </head>
 <body>
@@ -171,7 +180,7 @@
     <a href="https://xdbdb.com/momentum-corr/">モメンタム相関係数</a>
     <a href="https://xdbdb.com/">トップ</a>
   </nav>
-  <p class="ph-tagline">AI関連の日本株54銘柄をサプライチェーン上の9つのセクター（島）に分類し、島間の取引関係とともに業界構造を地図化したものです。島をクリックすると内部構造が展開されます。</p>
+  <p class="ph-tagline">AI関連の日本株54銘柄を、半導体・製造装置・材料・電子部品・電線・パワー半導体・フィジカルAI・データセンター・AI／LLMという9つのセクター（島）に分類し、サプライチェーン上の取引関係とともに地図化した業界地図（カオスマップ）です。各銘柄が生成AIのエコシステムのどこを担っているかを俯瞰でき、島をクリックすると内部の銘柄構造が展開されます。株価・前日比は毎営業日更新です。</p>
   <div class="ph-meta">
     <span><b>生成：</b><span id="ph-generated">—</span></span>
     <span><b>基準：</b>東京市場クローズ後（毎朝更新）</span>
@@ -200,6 +209,15 @@
 </div>
 
 <section id="list"></section>
+
+<section class="seo-section">
+  <h2>AI関連銘柄をサプライチェーンの「地図」で見る</h2>
+  <p>「AI関連銘柄」と一口に言っても、その裾野は非常に広く、担う役割もさまざまです。生成AIのモデルを開発する企業もあれば、その計算を支えるデータセンター、さらにその基盤となる半導体、そして半導体を作るための製造装置や材料まで、いくつもの層が連なって一つのエコシステムを形成しています。本サイトは、この複雑なAIサプライチェーンを9つのセクター（島）に分類し、銘柄がどこに位置するのかを視覚的に俯瞰できる業界地図（カオスマップ）です。</p>
+  <h2>川上から川下へ──9つの島のつながり</h2>
+  <p>地図上の島は、サプライチェーンの流れに沿ってつながっています。半導体材料や製造装置という最も川上の領域から始まり、それらを使って半導体が作られ、電子部品やパワー半導体とともに、データセンターやフィジカルAI（ロボット・FA）へと供給されます。そしてデータセンターの計算資源の上で、AI／LLMのサービスが動きます。島と島を結ぶ矢印は、こうした企業間の取引の流れを表しており、AIブームの恩恵がどの順序で波及していくのかを構造的に理解できます。</p>
+  <h2>「次の主役」を構造から探す</h2>
+  <p>AI相場では、注目が一つの層から別の層へと移っていくことがしばしばあります。生成AIのソフトウェアが注目された後に半導体へ、さらにその先の電力やデータセンター、冷却・実装を担う部品へと関心が広がる、といった具合です。個別銘柄を点で追うのではなく、サプライチェーン全体の地図として捉えることで、いま物色されている層と、まだ注目されていない隣接領域との関係が見えやすくなります。本サイトの業界地図は、AIエコシステム全体を俯瞰し、銘柄間の構造的なつながりを把握するための一つの視点を提供します。</p>
+</section>
 
 <footer class="disclaimer">
   本サイトの情報は投資勧誘を目的とするものではなく、情報提供のみを目的としています。株価・前日比等のデータは毎営業日の更新を目指していますが、正確性・完全性を保証するものではありません。投資に関する最終判断はご自身の判断と責任においてお願いします。
@@ -577,10 +595,7 @@ back.addEventListener('click',()=>{
 /* ============ 下部：SEO用の銘柄一覧（コード・銘柄名・業務内容は静的、株価・前日比はJSで最新化） ============ */
 function renderList(){
   const el=document.getElementById('list');
-  const lead=`AIブームの中心にある日本の上場企業を、サプライチェーン上の9つのセクター（島）に分類し、`
-    +`相互の取引関係とともに地図化したものです。各銘柄のコード・社名・事業概要は固定で掲載し、`
-    +`株価と前日比は毎営業日の更新で反映します（正常更新時は緑で表示）。`;
-  let html=`<p class="lead">${lead}</p>`;
+  let html=`<div class="lead"><p class="lead-h">地図の読み方</p><ul><li><b>島（円）</b> … AIサプライチェーン上の9つのセクター。円の中の銘柄数で大きさが変わります。</li><li><b>ノード（円の中の点）</b> … 個別銘柄。大きさは時価総額、色は前日比（緑＝上昇、赤＝下落）を表します。</li><li><b>矢印（島と島を結ぶ線）</b> … セクター間の取引の流れ。たとえば「半導体材料 → 半導体 → データセンター → AI／LLM」のように、川上から川下へと向かいます。</li><li><b>複数の島にまたがる銘柄</b> … 事業が複数セクターにわたる企業は、該当する島の両方に表示されます。</li></ul><p>島をクリックすると、その島に属する銘柄の内部構造が開きます。</p></div>`;
   Object.keys(ISLANDS).forEach(k=>{
     const mem=STOCKS.filter(s=>s.home===k); // homeの島のみ掲載（重複コンテンツ回避）
     html+=`<div class="sec"><div class="sec-h"><h2>${ISLANDS[k].name}</h2>`
