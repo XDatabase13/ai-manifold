@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timezone, timedelta, date as _date
 from pathlib import Path
 
+import pandas as pd
 import yfinance as yf
 
 try:
@@ -87,6 +88,28 @@ def _mcap_trillion(t):
     return None
 
 
+def _quote_latest(ticker_obj):
+    """
+    チャートAPIメタ（quote相当）から直近約定値と時刻を返す。
+    2026-07-06頃からYahooのチャートAPIが東証銘柄で「引け後〜翌営業日の反映まで」
+    直近セッションの日足バーを返さなくなったため、
+    日足の最終バーが古い場合のフォールバックとして使う。
+    直近の history() 呼び出しのレスポンスを再利用するので追加リクエストは発生しない。
+    Returns: (price: float|None, dt: datetime|None)  — dt は取引所タイムゾーン
+    """
+    try:
+        meta    = ticker_obj.get_history_metadata()
+        price   = meta.get("regularMarketPrice")
+        epoch   = meta.get("regularMarketTime")
+        tz_name = meta.get("exchangeTimezoneName")
+        if price is None or epoch is None or tz_name is None:
+            return None, None
+        dt = pd.Timestamp(epoch, unit="s", tz="UTC").tz_convert(tz_name).to_pydatetime()
+        return float(price), dt
+    except Exception:
+        return None, None
+
+
 def fetch_one(code):
     """(price, change_pct, mcap_trillion, date_str) を返す。失敗時は (None, None, None, None)。"""
     ticker_str = f"{code}.T"
@@ -102,12 +125,20 @@ def fetch_one(code):
 
             price    = round(float(closes.iloc[-1]), 2)
             date_str = str(closes.index[-1].date())
+            prev     = float(closes.iloc[-2]) if len(closes) >= 2 else None
+
+            # quoteフォールバック: 日足最終バーより新しい日付の約定があれば採用
+            q_val, q_dt = _quote_latest(t)
+            if (q_val is not None and q_val > 0 and q_dt is not None
+                    and str(q_dt.date()) > date_str):
+                print(f"  {code:5s}  [補正] 日足が{date_str}止まり → quote終値({q_dt.date()} {q_val})を採用")
+                prev     = price
+                price    = round(float(q_val), 2)
+                date_str = str(q_dt.date())
 
             chg_pct = None
-            if len(closes) >= 2:
-                prev = float(closes.iloc[-2])
-                if prev:
-                    chg_pct = round((price - prev) / abs(prev) * 100, 4)
+            if prev:
+                chg_pct = round((price - prev) / abs(prev) * 100, 4)
 
             mcap = _mcap_trillion(t)
             return price, chg_pct, mcap, date_str
