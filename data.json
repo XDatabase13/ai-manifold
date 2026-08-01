@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-08-01T05:30:57+09:00",
+    "generated_at": "2026-08-02T05:30:55+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -22,7 +22,7 @@
     "6702": {
       "price": 3659.0,
       "change_pct": -6.2276,
-      "mcap_trillion": 6.3476,
+      "mcap_trillion": 6.3507,
       "date": "2026-07-31",
       "status": "ok"
     },
