@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-08-08T05:30:57+09:00",
+    "generated_at": "2026-08-09T05:30:53+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -106,7 +106,7 @@
     "6525": {
       "price": 8136.0,
       "change_pct": -1.07,
-      "mcap_trillion": 1.9002,
+      "mcap_trillion": 1.8988,
       "date": "2026-08-07",
       "status": "ok"
     },
@@ -134,7 +134,7 @@
     "7751": {
       "price": 4635.0,
       "change_pct": 2.3857,
-      "mcap_trillion": 3.9367,
+      "mcap_trillion": 3.9117,
       "date": "2026-08-07",
       "status": "ok"
     },
@@ -148,14 +148,14 @@
     "4063": {
       "price": 6116.0,
       "change_pct": -0.827,
-      "mcap_trillion": 11.3739,
+      "mcap_trillion": 11.3127,
       "date": "2026-08-07",
       "status": "ok"
     },
     "3436": {
       "price": 3470.0,
       "change_pct": -2.088,
-      "mcap_trillion": 1.2135,
+      "mcap_trillion": 1.2136,
       "date": "2026-08-07",
       "status": "ok"
     },
@@ -211,7 +211,7 @@
     "6981": {
       "price": 7263.0,
       "change_pct": -2.1291,
-      "mcap_trillion": 13.2208,
+      "mcap_trillion": 13.2209,
       "date": "2026-08-07",
       "status": "ok"
     },
@@ -302,7 +302,7 @@
     "6504": {
       "price": 14630.0,
       "change_pct": 2.0935,
-      "mcap_trillion": 2.1359,
+      "mcap_trillion": 2.139,
       "date": "2026-08-07",
       "status": "ok"
     },
@@ -337,7 +337,7 @@
     "6273": {
       "price": 74190.0,
       "change_pct": -1.5395,
-      "mcap_trillion": 4.6488,
+      "mcap_trillion": 4.6642,
       "date": "2026-08-07",
       "status": "ok"
     },
