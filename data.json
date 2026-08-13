@@ -1,385 +1,385 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-08-13T05:30:56+09:00",
+    "generated_at": "2026-08-14T05:30:51+09:00",
     "overall_status": "complete"
   },
   "stocks": {
     "9432": {
       "price": 158.4,
       "change_pct": -0.9381,
-      "mcap_trillion": 12.8626,
+      "mcap_trillion": 13.0331,
       "date": "2026-08-12",
       "status": "ok"
     },
     "9433": {
       "price": 2833.0,
       "change_pct": 0.106,
-      "mcap_trillion": 10.4737,
+      "mcap_trillion": 10.4626,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6702": {
       "price": 3701.0,
       "change_pct": -0.484,
-      "mcap_trillion": 6.4065,
+      "mcap_trillion": 6.4914,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6701": {
       "price": 4913.0,
       "change_pct": 0.5115,
-      "mcap_trillion": 6.5163,
+      "mcap_trillion": 6.5216,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6758": {
       "price": 3762.0,
       "change_pct": -0.0531,
-      "mcap_trillion": 22.0211,
+      "mcap_trillion": 21.6591,
       "date": "2026-08-12",
       "status": "ok"
     },
     "9984": {
       "price": 5520.0,
       "change_pct": 0.6565,
-      "mcap_trillion": 31.4581,
+      "mcap_trillion": 31.7715,
       "date": "2026-08-12",
       "status": "ok"
     },
     "285A": {
       "price": 49870.0,
       "change_pct": 3.8742,
-      "mcap_trillion": 27.291,
+      "mcap_trillion": 28.3472,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6723": {
       "price": 3806.0,
       "change_pct": -0.4967,
-      "mcap_trillion": 6.9554,
+      "mcap_trillion": 6.8604,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6526": {
       "price": 1963.5,
       "change_pct": -0.2287,
-      "mcap_trillion": 0.3442,
+      "mcap_trillion": 0.3491,
       "date": "2026-08-12",
       "status": "ok"
     },
     "8035": {
       "price": 58230.0,
       "change_pct": 2.6079,
-      "mcap_trillion": 26.4743,
+      "mcap_trillion": 27.0381,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6920": {
       "price": 38980.0,
       "change_pct": -1.5408,
-      "mcap_trillion": 3.4938,
+      "mcap_trillion": 3.6291,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6857": {
       "price": 34550.0,
       "change_pct": 0.8465,
-      "mcap_trillion": 25.0175,
+      "mcap_trillion": 26.0239,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6146": {
       "price": 62960.0,
       "change_pct": -0.0318,
-      "mcap_trillion": 6.8291,
+      "mcap_trillion": 7.1404,
       "date": "2026-08-12",
       "status": "ok"
     },
     "7735": {
       "price": 13745.0,
       "change_pct": 4.3264,
-      "mcap_trillion": 2.599,
+      "mcap_trillion": 2.6728,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6525": {
       "price": 8657.0,
       "change_pct": 8.1314,
-      "mcap_trillion": 2.0204,
+      "mcap_trillion": 2.104,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6315": {
       "price": 2541.0,
       "change_pct": 0.0,
-      "mcap_trillion": 0.1907,
+      "mcap_trillion": 0.1872,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6323": {
       "price": 4100.0,
       "change_pct": 1.5103,
-      "mcap_trillion": 0.7111,
+      "mcap_trillion": 0.7376,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6254": {
       "price": 3985.0,
       "change_pct": 4.3194,
-      "mcap_trillion": 0.153,
+      "mcap_trillion": 0.1495,
       "date": "2026-08-12",
       "status": "ok"
     },
     "7751": {
       "price": 4564.0,
       "change_pct": -1.3829,
-      "mcap_trillion": 3.8518,
+      "mcap_trillion": 3.8611,
       "date": "2026-08-12",
       "status": "ok"
     },
     "7731": {
       "price": 2032.5,
       "change_pct": -1.6453,
-      "mcap_trillion": 0.6695,
+      "mcap_trillion": 0.67,
       "date": "2026-08-12",
       "status": "ok"
     },
     "4063": {
       "price": 6410.0,
       "change_pct": 1.9726,
-      "mcap_trillion": 11.8566,
+      "mcap_trillion": 11.7974,
       "date": "2026-08-12",
       "status": "ok"
     },
     "3436": {
       "price": 3647.0,
       "change_pct": 4.5885,
-      "mcap_trillion": 1.2755,
+      "mcap_trillion": 1.3451,
       "date": "2026-08-12",
       "status": "ok"
     },
     "4004": {
       "price": 17410.0,
       "change_pct": 6.581,
-      "mcap_trillion": 3.3028,
+      "mcap_trillion": 3.225,
       "date": "2026-08-12",
       "status": "ok"
     },
     "4062": {
       "price": 20480.0,
       "change_pct": 3.0181,
-      "mcap_trillion": 5.7235,
+      "mcap_trillion": 6.0253,
       "date": "2026-08-12",
       "status": "ok"
     },
     "7741": {
       "price": 26010.0,
       "change_pct": -0.9143,
-      "mcap_trillion": 8.7009,
+      "mcap_trillion": 8.8849,
       "date": "2026-08-12",
       "status": "ok"
     },
     "5384": {
       "price": 4010.0,
       "change_pct": 1.7766,
-      "mcap_trillion": 0.2975,
+      "mcap_trillion": 0.3042,
       "date": "2026-08-12",
       "status": "ok"
     },
     "3110": {
       "price": 3050.0,
       "change_pct": 8.3481,
-      "mcap_trillion": 0.5552,
+      "mcap_trillion": 0.5889,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6855": {
       "price": 6690.0,
       "change_pct": 1.6717,
-      "mcap_trillion": 0.098,
+      "mcap_trillion": 0.1017,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6890": {
       "price": 8940.0,
       "change_pct": -1.1062,
-      "mcap_trillion": 0.4809,
+      "mcap_trillion": 0.4965,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6981": {
       "price": 7538.0,
       "change_pct": 3.232,
-      "mcap_trillion": 13.7215,
+      "mcap_trillion": 15.1286,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6976": {
       "price": 10265.0,
       "change_pct": 7.5094,
-      "mcap_trillion": 1.2846,
+      "mcap_trillion": 1.3685,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6762": {
       "price": 3114.0,
       "change_pct": 2.266,
-      "mcap_trillion": 5.9109,
+      "mcap_trillion": 6.1405,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6971": {
       "price": 3790.0,
       "change_pct": -0.8373,
-      "mcap_trillion": 4.8779,
+      "mcap_trillion": 5.026,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6479": {
       "price": 3753.0,
       "change_pct": 0.7246,
-      "mcap_trillion": 1.5072,
+      "mcap_trillion": 1.5265,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6997": {
       "price": 2956.0,
       "change_pct": 1.931,
-      "mcap_trillion": 0.0809,
+      "mcap_trillion": 0.0844,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6779": {
       "price": 2860.0,
       "change_pct": -3.5738,
-      "mcap_trillion": 0.0656,
+      "mcap_trillion": 0.0726,
       "date": "2026-08-12",
       "status": "ok"
     },
     "5344": {
       "price": 60670.0,
       "change_pct": 3.2505,
-      "mcap_trillion": 0.7487,
+      "mcap_trillion": 0.7672,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6787": {
       "price": 17970.0,
       "change_pct": 6.2685,
-      "mcap_trillion": 0.4612,
+      "mcap_trillion": 0.4823,
       "date": "2026-08-12",
       "status": "ok"
     },
     "5803": {
       "price": 5800.0,
       "change_pct": 3.9427,
-      "mcap_trillion": 9.6031,
+      "mcap_trillion": 9.5368,
       "date": "2026-08-12",
       "status": "ok"
     },
     "5801": {
       "price": 4222.0,
       "change_pct": 6.832,
-      "mcap_trillion": 2.9702,
+      "mcap_trillion": 2.8921,
       "date": "2026-08-12",
       "status": "ok"
     },
     "5802": {
       "price": 2270.0,
       "change_pct": 5.044,
-      "mcap_trillion": 7.0817,
+      "mcap_trillion": 7.2829,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6963": {
       "price": 4793.0,
       "change_pct": 1.7622,
-      "mcap_trillion": 1.8503,
+      "mcap_trillion": 1.8862,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6504": {
       "price": 14490.0,
       "change_pct": -0.9569,
-      "mcap_trillion": 2.1154,
+      "mcap_trillion": 2.1855,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6503": {
       "price": 5892.0,
       "change_pct": 0.8214,
-      "mcap_trillion": 12.0576,
+      "mcap_trillion": 12.3195,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6861": {
       "price": 87200.0,
       "change_pct": 2.5882,
-      "mcap_trillion": 21.1482,
+      "mcap_trillion": 21.01,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6954": {
       "price": 6720.0,
       "change_pct": 3.2734,
-      "mcap_trillion": 6.2708,
+      "mcap_trillion": 6.0702,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6506": {
       "price": 5454.0,
       "change_pct": 1.6589,
-      "mcap_trillion": 1.4146,
+      "mcap_trillion": 1.4213,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6273": {
       "price": 78320.0,
       "change_pct": -0.0255,
-      "mcap_trillion": 4.9076,
+      "mcap_trillion": 4.8455,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6324": {
       "price": 6400.0,
       "change_pct": 0.3135,
-      "mcap_trillion": 0.6059,
+      "mcap_trillion": 0.639,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6594": {
       "price": 2734.0,
       "change_pct": -0.9061,
-      "mcap_trillion": 3.134,
+      "mcap_trillion": 3.1844,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6645": {
       "price": 6850.0,
       "change_pct": -0.3491,
-      "mcap_trillion": 1.3469,
+      "mcap_trillion": 1.3768,
       "date": "2026-08-12",
       "status": "ok"
     },
     "3778": {
       "price": 3440.0,
       "change_pct": 3.7707,
-      "mcap_trillion": 0.1377,
+      "mcap_trillion": 0.1475,
       "date": "2026-08-12",
       "status": "ok"
     },
     "3905": {
       "price": 1859.0,
       "change_pct": 4.5557,
-      "mcap_trillion": 0.0594,
+      "mcap_trillion": 0.0599,
       "date": "2026-08-12",
       "status": "ok"
     },
     "6501": {
       "price": 5669.0,
       "change_pct": 0.8719,
-      "mcap_trillion": 25.3752,
+      "mcap_trillion": 25.523,
       "date": "2026-08-12",
       "status": "ok"
     }
