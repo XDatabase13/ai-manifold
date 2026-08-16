@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-08-16T05:30:42+09:00",
+    "generated_at": "2026-08-17T05:30:43+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -337,7 +337,7 @@
     "6273": {
       "price": 76430.0,
       "change_pct": -1.1638,
-      "mcap_trillion": 4.7891,
+      "mcap_trillion": 4.8051,
       "date": "2026-08-14",
       "status": "ok"
     },
