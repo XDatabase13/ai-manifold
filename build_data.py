@@ -3,6 +3,7 @@
 54銘柄の株価・前日比・時価総額をyfinanceで取得し data.json を出力する。
 """
 import json
+import re
 import sys
 import time
 from datetime import datetime, timezone, timedelta, date as _date
@@ -18,6 +19,8 @@ except AttributeError:
 
 SCRIPT_DIR = Path(__file__).parent
 DATA_PATH  = SCRIPT_DIR / "data.json"
+INDEX_PATH = SCRIPT_DIR / "index.html"
+DESC_PATH  = SCRIPT_DIR / "ai_manifold_desc.json"
 
 JST            = timezone(timedelta(hours=9))
 MAX_RETRIES    = 5
@@ -45,6 +48,214 @@ STOCK_CODES = [
     # 島9 データセンター
     "3778", "3905", "6501",
 ]
+
+
+# =========================================================================
+# 静的HTML焼き込み用データ(index.html内 ISLANDS/STOCKS のJS定数と同一。
+# renderList()/renderTodaySummary() をPython側で再現するためのミラー)
+# =========================================================================
+ISLANDS = {
+    "ai":    "AI・LLM／国内テック",
+    "semi":  "半導体",
+    "equip": "半導体製造装置",
+    "mat":   "半導体材料",
+    "parts": "電子部品",
+    "cable": "電線・ケーブル",
+    "power": "パワー半導体",
+    "phys":  "フィジカルAI",
+    "dc":    "データセンター",
+}
+
+# 島の表示順(index.html の ISLANDS オブジェクトの列挙順と一致させる)
+ISLAND_ORDER = ["ai", "semi", "equip", "mat", "parts", "cable", "power", "phys", "dc"]
+
+STOCKS = [
+    {"c": "9432", "n": "NTT",                "home": "ai",  "also": ["dc"]},
+    {"c": "9433", "n": "KDDI",               "home": "ai",  "also": ["dc"]},
+    {"c": "6702", "n": "富士通",              "home": "ai"},
+    {"c": "6701", "n": "NEC",                "home": "ai",  "also": ["semi"]},
+    {"c": "6758", "n": "ソニーG",             "home": "ai",  "also": ["semi"]},
+    {"c": "9984", "n": "SBG",                "home": "ai",  "also": ["semi"]},
+    {"c": "285A", "n": "キオクシア",          "home": "semi"},
+    {"c": "6723", "n": "ルネサス",            "home": "semi"},
+    {"c": "6526", "n": "ソシオネクス",        "home": "semi"},
+    {"c": "8035", "n": "東エレク",            "home": "equip"},
+    {"c": "6920", "n": "レーザーテック",      "home": "equip"},
+    {"c": "6857", "n": "アドバンテスト",      "home": "equip"},
+    {"c": "6146", "n": "ディスコ",            "home": "equip"},
+    {"c": "7735", "n": "SCREEN",             "home": "equip"},
+    {"c": "6525", "n": "コクサイ",            "home": "equip"},
+    {"c": "6315", "n": "TOWA",               "home": "equip"},
+    {"c": "6323", "n": "ローツェ",            "home": "equip"},
+    {"c": "6254", "n": "野村マイクロ",        "home": "equip"},
+    {"c": "7751", "n": "キヤノン",            "home": "equip"},
+    {"c": "7731", "n": "ニコン",              "home": "equip"},
+    {"c": "4063", "n": "信越化学",            "home": "mat"},
+    {"c": "3436", "n": "SUMCO",              "home": "mat"},
+    {"c": "4004", "n": "レゾナック",          "home": "mat", "also": ["parts"]},
+    {"c": "4062", "n": "イビデン",            "home": "mat", "also": ["parts"]},
+    {"c": "7741", "n": "HOYA",               "home": "mat"},
+    {"c": "5384", "n": "フジミインコ",        "home": "mat"},
+    {"c": "3110", "n": "日東紡",              "home": "mat", "also": ["parts"]},
+    {"c": "6855", "n": "日本電子材料",        "home": "mat"},
+    {"c": "6890", "n": "フェローテック",      "home": "mat"},
+    {"c": "6981", "n": "村田製作所",          "home": "parts"},
+    {"c": "6976", "n": "太陽誘電",            "home": "parts"},
+    {"c": "6762", "n": "TDK",                "home": "parts"},
+    {"c": "6971", "n": "京セラ",              "home": "parts", "also": ["semi"]},
+    {"c": "6479", "n": "ミネベアミツミ",      "home": "parts", "also": ["phys"]},
+    {"c": "6997", "n": "日本ケミコン",        "home": "parts"},
+    {"c": "6779", "n": "日本電波工業",        "home": "parts"},
+    {"c": "5344", "n": "MARUWA",             "home": "parts", "also": ["mat"]},
+    {"c": "6787", "n": "メイコー",            "home": "parts"},
+    {"c": "5803", "n": "フジクラ",            "home": "cable"},
+    {"c": "5801", "n": "古河電工",            "home": "cable"},
+    {"c": "5802", "n": "住友電工",            "home": "cable"},
+    {"c": "6963", "n": "ローム",              "home": "power", "also": ["semi"]},
+    {"c": "6504", "n": "富士電機",            "home": "power"},
+    {"c": "6503", "n": "三菱電機",            "home": "power", "also": ["phys"]},
+    {"c": "6861", "n": "キーエンス",          "home": "phys"},
+    {"c": "6954", "n": "ファナック",          "home": "phys"},
+    {"c": "6506", "n": "安川電機",            "home": "phys"},
+    {"c": "6273", "n": "SMC",                "home": "phys"},
+    {"c": "6324", "n": "ハーモニック",        "home": "phys"},
+    {"c": "6594", "n": "ニデック",            "home": "phys", "also": ["dc"]},
+    {"c": "6645", "n": "オムロン",            "home": "phys", "also": ["parts"]},
+    {"c": "3778", "n": "サクラインターネット", "home": "dc"},
+    {"c": "3905", "n": "データセクション",    "home": "dc", "also": ["ai"]},
+    {"c": "6501", "n": "日立",                "home": "dc", "also": ["ai"]},
+]
+
+_DESC = json.loads(DESC_PATH.read_text(encoding="utf-8")) if DESC_PATH.exists() else {}
+
+
+def _esc(s) -> str:
+    if s is None:
+        return ""
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _replace_between(text: str, start: str, end: str, inner: str) -> str:
+    pattern = re.escape(start) + r".*?" + re.escape(end)
+    if not re.search(pattern, text, flags=re.DOTALL):
+        print(f"[bake警告] マーカーが見つかりません: {start}")
+        return text
+    return re.sub(pattern, lambda _: start + inner + end, text, count=1, flags=re.DOTALL)
+
+
+def _replace_by_id(content: str, elem_id: str, new_inner: str) -> str:
+    pattern = re.compile(r'(id="' + re.escape(elem_id) + r'"[^>]*>)[^<]*')
+    if not pattern.search(content):
+        print(f"[bake警告] id={elem_id} が見つかりません")
+        return content
+    return pattern.sub(lambda m: m.group(1) + new_inner, content, count=1)
+
+
+def _mover_html(code, chg) -> str:
+    """renderTodaySummary()(index.html内JS)の mover() と同一。"""
+    if code is None or chg is None:
+        return "—"
+    name = next((s["n"] for s in STOCKS if s["c"] == code), code)
+    mark = "▲" if chg > 0 else "▼" if chg < 0 else "–"
+    cls = "up" if chg > 0 else "down" if chg < 0 else "flat"
+    return f'{code} {name} <span class="{cls}">{mark}{abs(chg):.2f}%</span>'
+
+
+def _build_summary_html(stocks_out: dict) -> str:
+    """renderTodaySummary()(index.html内JS)と同一構造の静的HTML。"""
+    up = down = 0
+    top_code = top_chg = None
+    bot_code = bot_chg = None
+    for s in STOCKS:
+        d = stocks_out.get(s["c"]) or {}
+        if d.get("status") == "failed":
+            continue
+        chg = d.get("change_pct")
+        if chg is None:
+            continue
+        if chg > 0:
+            up += 1
+        elif chg < 0:
+            down += 1
+        if top_chg is None or chg > top_chg:
+            top_chg, top_code = chg, s["c"]
+        if bot_chg is None or chg < bot_chg:
+            bot_chg, bot_code = chg, s["c"]
+
+    return f"""<div class="ts-card">
+    <span><b class="up">{up}</b>銘柄が前日比上昇 ／ <b class="down">{down}</b>銘柄が前日比下落</span>
+    <span>最高上昇 <b>{_mover_html(top_code, top_chg)}</b></span>
+    <span>最大下落 <b>{_mover_html(bot_code, bot_chg)}</b></span>
+  </div>"""
+
+
+def _build_list_html(stocks_out: dict) -> str:
+    """renderList()(index.html内JS)と同一構造の静的HTML。"""
+    parts = [
+        '<div class="lead"><p class="lead-h">地図の読み方</p><ul>'
+        '<li><b>島（円）</b> … AIサプライチェーン上の9つのセクター。円の中の銘柄数で大きさが変わります。</li>'
+        '<li><b>ノード（円の中の点）</b> … 個別銘柄。大きさは時価総額、色は前日比（緑＝上昇、赤＝下落）を表します。</li>'
+        '<li><b>矢印（島と島を結ぶ線）</b> … セクター間の取引の流れ。たとえば「半導体材料 → 半導体 → データセンター → AI／LLM」のように、川上から川下へと向かいます。</li>'
+        '<li><b>複数の島にまたがる銘柄</b> … 事業が複数セクターにわたる企業は、該当する島の両方に表示されます。</li>'
+        '</ul><p>島をクリックすると、その島に属する銘柄の内部構造が開きます。</p></div>'
+    ]
+    for isl_id in ISLAND_ORDER:
+        members = [s for s in STOCKS if s["home"] == isl_id]
+        parts.append(
+            f'<div class="sec"><div class="sec-h"><h2>{ISLANDS[isl_id]}</h2>'
+            f'<span class="cnt">{len(members)}銘柄</span></div>'
+        )
+        for s in members:
+            d = stocks_out.get(s["c"]) or {}
+            price = d.get("price")
+            chg = d.get("change_pct") or 0
+            fresh = d.get("status") == "ok"
+            price_disp = f"{round(price):,}" if price is not None else "—"
+            sign = "+" if chg > 0 else ""
+            color = "var(--up)" if chg > 0 else "var(--down)" if chg < -0.05 else "var(--flat)"
+            arrow = "▲" if chg > 0 else "▼" if chg < -0.05 else "–"
+            st = '<span class="st" title="正常更新"></span>' if fresh else ""
+            also = s.get("also") or []
+            cross = f' <span class="x">※{"・".join(ISLANDS[o] for o in also)}にも関連</span>' if also else ""
+            desc = _DESC.get(s["c"], "")
+            parts.append(
+                f'<div class="row">'
+                f'<span class="cd">{s["c"]}</span>'
+                f'<span class="nm">{_esc(s["n"])}</span>'
+                f'<span class="pr">{price_disp}{st}</span>'
+                f'<span class="chg" style="color:{color}">{arrow}{sign}{chg:.2f}%</span>'
+                f'<span class="ds">{desc}{cross}</span>'
+                f'</div>'
+            )
+        parts.append("</div>")
+    return "\n".join(parts)
+
+
+def bake_index_html(output: dict, index_path: Path) -> None:
+    if not index_path.exists():
+        print(f"[bake警告] {index_path} が見つかりません。スキップ。")
+        return
+
+    content = index_path.read_text(encoding="utf-8")
+    stocks_out = output.get("stocks", {})
+    meta = output.get("_meta", {})
+
+    content = _replace_between(content, "<!--SUMMARY_START-->", "<!--SUMMARY_END-->",
+                                "\n" + _build_summary_html(stocks_out) + "\n")
+    content = _replace_between(content, "<!--STOCK_LIST_START-->", "<!--STOCK_LIST_END-->",
+                                "\n" + _build_list_html(stocks_out) + "\n")
+
+    gen_at = meta.get("generated_at")
+    if gen_at:
+        try:
+            dt = datetime.fromisoformat(gen_at).astimezone(JST)
+            gen_str = dt.strftime("%Y/%m/%d %H:%M") + " JST"
+        except Exception:
+            gen_str = gen_at
+        content = _replace_by_id(content, "ph-generated", gen_str)
+
+    index_path.write_text(content, encoding="utf-8")
+    print("[bake] index.html 焼き込み完了")
 
 
 def now_jst():
@@ -211,6 +422,7 @@ def main():
         "stocks": stocks_out,
     }
     save(output)
+    bake_index_html(output, INDEX_PATH)
     tag = "OK" if overall == "complete" else "WARN"
     print(f"[{tag}] data.json 書き出し完了  overall={overall}  {jst_iso(generated_at)}")
 
