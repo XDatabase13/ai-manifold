@@ -69,6 +69,10 @@ ISLANDS = {
 # 島の表示順(index.html の ISLANDS オブジェクトの列挙順と一致させる)
 ISLAND_ORDER = ["ai", "semi", "equip", "mat", "parts", "cable", "power", "phys", "dc"]
 
+# 横断注記（※〇〇にも関連）用の短縮ラベル。ISLANDS の見出し名と異なる島のみ上書きする
+# (index.html の ISLANDS[k].cross と対で保守すること)
+ISLAND_CROSS_NAME = {"ai": "AI"}
+
 STOCKS = [
     {"c": "9432", "n": "NTT",                "home": "ai",  "also": ["dc"]},
     {"c": "9433", "n": "KDDI",               "home": "ai",  "also": ["dc"]},
@@ -216,7 +220,7 @@ def _build_list_html(stocks_out: dict) -> str:
             arrow = "▲" if chg > 0 else "▼" if chg < -0.05 else "–"
             st = '<span class="st" title="正常更新"></span>' if fresh else ""
             also = s.get("also") or []
-            cross = f' <span class="x">※{"・".join(ISLANDS[o] for o in also)}にも関連</span>' if also else ""
+            cross = f' <span class="x">※{"・".join(ISLAND_CROSS_NAME.get(o, ISLANDS[o]) for o in also)}にも関連</span>' if also else ""
             desc = _DESC.get(s["c"], "")
             parts.append(
                 f'<div class="row">'
