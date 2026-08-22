@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-08-22T08:40:02+09:00",
+    "generated_at": "2026-08-23T07:30:44+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -169,7 +169,7 @@
     "4062": {
       "price": 19190.0,
       "change_pct": 0.2089,
-      "mcap_trillion": 5.363,
+      "mcap_trillion": 5.3942,
       "date": "2026-08-21",
       "status": "ok"
     },
@@ -337,7 +337,7 @@
     "6273": {
       "price": 71090.0,
       "change_pct": 0.5659,
-      "mcap_trillion": 4.4693,
+      "mcap_trillion": 4.4545,
       "date": "2026-08-21",
       "status": "ok"
     },
