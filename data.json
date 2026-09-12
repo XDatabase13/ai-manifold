@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-09-12T07:30:44+09:00",
+    "generated_at": "2026-09-13T07:30:47+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -50,7 +50,7 @@
     "285A": {
       "price": 54030.0,
       "change_pct": -6.9892,
-      "mcap_trillion": 29.5675,
+      "mcap_trillion": 28.7712,
       "date": "2026-09-11",
       "status": "ok"
     },
