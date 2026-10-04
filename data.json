@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-10-04T07:30:47+09:00",
+    "generated_at": "2026-10-05T07:30:41+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -43,7 +43,7 @@
     "9984": {
       "price": 6310.0,
       "change_pct": -5.835,
-      "mcap_trillion": 35.9602,
+      "mcap_trillion": 35.961,
       "date": "2026-10-02",
       "status": "ok"
     },
@@ -218,7 +218,7 @@
     "6976": {
       "price": 10095.0,
       "change_pct": -0.0495,
-      "mcap_trillion": 1.3149,
+      "mcap_trillion": 1.3365,
       "date": "2026-10-02",
       "status": "ok"
     },
