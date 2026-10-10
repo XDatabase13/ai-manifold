@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-10-10T07:30:50+09:00",
+    "generated_at": "2026-10-11T07:30:48+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -15,7 +15,7 @@
     "9433": {
       "price": 2893.0,
       "change_pct": -0.4131,
-      "mcap_trillion": 10.6924,
+      "mcap_trillion": 10.6902,
       "date": "2026-10-09",
       "status": "ok"
     },
@@ -148,7 +148,7 @@
     "4063": {
       "price": 6085.0,
       "change_pct": -0.5881,
-      "mcap_trillion": 11.0447,
+      "mcap_trillion": 11.0487,
       "date": "2026-10-09",
       "status": "ok"
     },
@@ -169,7 +169,7 @@
     "4062": {
       "price": 11515.0,
       "change_pct": -2.4979,
-      "mcap_trillion": 6.532,
+      "mcap_trillion": 6.475,
       "date": "2026-10-09",
       "status": "ok"
     },
@@ -330,14 +330,14 @@
     "6506": {
       "price": 4783.0,
       "change_pct": -0.1253,
-      "mcap_trillion": 1.2406,
+      "mcap_trillion": 1.2409,
       "date": "2026-10-09",
       "status": "ok"
     },
     "6273": {
       "price": 73120.0,
       "change_pct": 1.8668,
-      "mcap_trillion": 4.5684,
+      "mcap_trillion": 4.564,
       "date": "2026-10-09",
       "status": "ok"
     },
