@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-10-18T07:30:50+09:00",
+    "generated_at": "2026-10-19T07:30:53+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -99,7 +99,7 @@
     "7735": {
       "price": 13815.0,
       "change_pct": 1.843,
-      "mcap_trillion": 2.6122,
+      "mcap_trillion": 2.6123,
       "date": "2026-10-16",
       "status": "ok"
     },
