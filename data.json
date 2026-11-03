@@ -1,14 +1,14 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-11-03T07:30:51+09:00",
+    "generated_at": "2026-11-04T07:30:53+09:00",
     "overall_status": "complete"
   },
   "stocks": {
     "9432": {
       "price": 174.5,
       "change_pct": 0.6924,
-      "mcap_trillion": 14.1228,
+      "mcap_trillion": 14.0953,
       "date": "2026-11-02",
       "status": "ok"
     },
@@ -288,7 +288,7 @@
     "5802": {
       "price": 1663.0,
       "change_pct": -6.0452,
-      "mcap_trillion": 5.188,
+      "mcap_trillion": 5.189,
       "date": "2026-11-02",
       "status": "ok"
     },
