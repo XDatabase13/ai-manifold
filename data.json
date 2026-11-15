@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema_version": "1.0",
-    "generated_at": "2026-11-15T07:30:46+09:00",
+    "generated_at": "2026-11-16T07:30:51+09:00",
     "overall_status": "complete"
   },
   "stocks": {
@@ -218,7 +218,7 @@
     "6976": {
       "price": 7095.0,
       "change_pct": -0.7831,
-      "mcap_trillion": 0.9394,
+      "mcap_trillion": 0.9446,
       "date": "2026-11-13",
       "status": "ok"
     },
@@ -302,7 +302,7 @@
     "6504": {
       "price": 11330.0,
       "change_pct": -2.4957,
-      "mcap_trillion": 1.6541,
+      "mcap_trillion": 1.6548,
       "date": "2026-11-13",
       "status": "ok"
     },
@@ -337,7 +337,7 @@
     "6273": {
       "price": 62320.0,
       "change_pct": 3.8667,
-      "mcap_trillion": 3.8899,
+      "mcap_trillion": 3.8847,
       "date": "2026-11-13",
       "status": "ok"
     },
@@ -379,7 +379,7 @@
     "6501": {
       "price": 4962.0,
       "change_pct": -0.3814,
-      "mcap_trillion": 22.0496,
+      "mcap_trillion": 22.0039,
       "date": "2026-11-13",
       "status": "ok"
     }
